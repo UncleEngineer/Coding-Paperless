@@ -1,5 +1,38 @@
 from tkinter import *
 from tkinter import ttk #พิมพ์ด้านบน
+# from basicsql import insert_job
+
+
+#########################DATABASE#######################
+import sqlite3
+
+conn = sqlite3.connect('mydatabase.sqlite3')
+c = conn.cursor()
+
+c.execute("""CREATE TABLE IF NOT EXISTS job (
+                ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                fullname TEXT,
+                tel TEXT,
+                position TEXT)""")
+
+
+def insert_job(fullname,tel,position):
+    with conn:
+        command = 'INSERT INTO job VALUES (?,?,?,?)'
+        c.execute(command,(None,fullname,tel,position))
+    conn.commit()
+    print('saved')
+
+# insert_job('สมศรี มีเงิน','0812345671','บัญชี')
+
+def view_job():
+    with conn:
+        command = 'SELECT * FROM job'
+        c.execute(command)
+        result = c.fetchall()
+    print(result)
+
+################################################
 
 GUI = Tk()
 GUI.geometry('500x500')
@@ -43,10 +76,12 @@ def Save():
     position = v_position.get()
     print(fullname,tel,position)
     data = [fullname,tel,position]
-    writetocsv(data)
+    # writetocsv(data)
+    insert_job(fullname,tel,position)
     v_fullname.set('')
     v_tel.set('')
     v_position.set('')
+    view_job()
 
 
 B1 = ttk.Button(GUI,text='บันทึก',command=Save)
